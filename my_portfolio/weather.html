@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Update - Iligan City</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: transparent;
+        color: #333333;
+        text-align: center;
+        background-image: url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_AjYm8UNM-a59WZ1BK1zRoSktdM19xrDbVg&);
+        background-repeat: no-repeat;
+        background-size: cover;
+
+      }
+      #weather {
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #a4869969;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        display: inline-block;
+        width: 80%;
+        
+      }
+      .day {
+        display: inline-block;
+        width: 10%;
+        margin: 10px;
+        padding: 10px;
+        background-color: #fab2f0;
+        border-radius: 5px;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .day img {
+        width: 60px;
+        height: auto;
+      }
+      footer {
+        margin-top: 8%;
+        padding: 20px;
+        background-color: #fa91fa69;
+        color: #0c0c0c;
+        position: relative;
+        bottom: 0;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Weather Update - Iligan City</h1>
+    <div id="weather">
+      <p>Loading weather data...</p>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", async function () {
+        const apiKey = "76ba22c935ba4d5aa2460823242108";
+        const cityName = "Iligan";
+        const apiEndpoint = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${cityName}&days=7`;
+
+        try {
+          const response = await fetch(apiEndpoint);
+          const weatherData = await response.json();
+          console.log(weatherData);
+
+          const weatherContainer = document.getElementById("weather");
+          const currentData = weatherData.current;
+          const forecastDays = weatherData.forecast.forecastday;
+
+          weatherContainer.innerHTML = `
+            <h2>${cityName}</h2>
+            <p><strong>Temperature:</strong> ${currentData.temp_c}°C</p>
+            <p><strong>Weather:</strong> ${currentData.condition.text}</p>
+            <p><strong>Humidity:</strong> ${currentData.humidity}%</p>
+          `;
+
+          forecastDays.forEach((day) => {
+            const date = new Date(day.date).toLocaleDateString("en-US", {
+              weekday: "long",
+            });
+            const temperatureInCelsius = day.day.avgtemp_c;
+            const weatherDescription = day.day.condition.text;
+            const iconUrl = day.day.condition.icon;
+
+            const dayDiv = document.createElement("div");
+            dayDiv.className = "day";
+            dayDiv.innerHTML = `
+              <h3>${date}</h3>
+              <img src="https:${iconUrl}" alt="${weatherDescription}" />
+              <p><strong>Temp:</strong> ${temperatureInCelsius}°C</p>
+              <p><strong>Weather:</strong> ${weatherDescription}</p>
+            `;
+            weatherContainer.appendChild(dayDiv);
+          });
+        } catch (error) {
+          const weatherContainer = document.getElementById("weather");
+          weatherContainer.innerHTML = `https<p>Unable to retrieve weather data: ${error.message}</p>`;
+        }
+      });
+    </script>
+  </body>
+</html>
